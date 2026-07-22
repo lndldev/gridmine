@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://bduwowqpqvwt"]
+
+[ext_resource type="PackedScene" uid="uid://do8c85i4mty8d" path="res://scenes/gridLayer.tscn" id="1_o5qli"]
+
+[node name="main" type="Node2D" unique_id=1745250326]
+
+[node name="layer1" parent="." unique_id=2094574596 instance=ExtResource("1_o5qli")]
