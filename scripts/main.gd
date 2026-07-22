@@ -52,17 +52,23 @@ func minable(coords : Vector2i) -> bool :
 func _unhandled_input(event: InputEvent) -> void:
 	pass
 
+func zoom_in() -> void:
+	var current_zoom = camera.zoom
+	current_zoom *= 0.9 
+	if current_zoom.x > 1 :
+		camera.zoom = current_zoom
+		
+func zoom_out() -> void:
+	var current_zoom = camera.zoom
+	current_zoom *= 1.1 
+	if current_zoom.x < 10 :
+		camera.zoom = current_zoom
+
 func _input(event):
 	if event.is_action_pressed("wheel_down"):
-		if camera.zoom.x < 1 :
-			camera.zoom = Vector2i(1,1)
-		else : 
-			camera.zoom *= 0.9 
+		zoom_in()
 	if event.is_action_pressed("wheel_up"):
-		if camera.zoom.x > 10 :
-			camera.zoom = Vector2i(10,10)
-		else:
-			camera.zoom *= 1.1
+		zoom_out()
 		
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1 :
 		var clicked_tile_coords = terrain.local_to_map(get_global_mouse_position())
