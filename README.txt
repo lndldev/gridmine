@@ -1,9 +1,3 @@
-#changements !
-mini refactos
-renaming brick -> stone
-algo vision corrigé
-adaptation de ce qui est minable ou pas (avant on pouvait miner tout ce qui était visible, maintenant seulement ce qui est adjacent à un ground)
-
 
 ##trucs à améliorer auxquels je pensais 
 
