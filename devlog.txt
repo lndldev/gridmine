@@ -39,3 +39,11 @@ terrain.get_cell_tile_data
 ca demande aussi un peu de level design pour contraindre la forme de chaque niveau
 
 6 - réfléchir à l'idée de biomes
+
+7 - ca pourrait être original de parfois faire de l'interraction entre plusieurs niveaux ? 
+genre gérer des canalisations, ou des ascenseurs
+
+8 - J'y pensais, les blocs "indestructibles" qui imposent au joueur de composer le layer autour, 
+est ce que ca ne pourrait pas justement etre des "filons" infinis
+genre un bloc que tu ne peux/veux pas détruire parce que si tu construit un batiment spécifique par dessus, ca te fait un revenu passif d'une ressource ?
+genre une courant d'eau, une arrivée de gaz, un point à champignons, etc
