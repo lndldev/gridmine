@@ -1,13 +1,15 @@
 extends Node2D
 
-@onready var terrain 	= $layer1
-@onready var fog 		= $FogTileMap
-@onready var target 	= $TargetTileMap
+@onready var terrain 	= $world/layer1
+@onready var fog 		= $world/FogTileMap
+@onready var target 	= $world/TargetTileMap
 
-@onready var tick_sound 	= $tick_sound
-@onready var break_sound 	= $break_sound
+@onready var tick_sound 	= $world/tick_sound
+@onready var break_sound 	= $world/break_sound
 
-@onready var clear_target 	= $clear_target
+@onready var clear_target 	= $world/clear_target
+
+@onready var camera 	= $Camera2D
 
 var resources = {
 	"stone" 	: 0,
@@ -47,7 +49,21 @@ func minable(coords : Vector2i) -> bool :
 	#debatable if second condition might be redundant
 	return is_block_minable(coords) and fog.get_cell_atlas_coords(coords) != fog_atlas and terrain.get_surrounding_cells(coords).any( func(cell) : return is_ground(cell) )
 
+func _unhandled_input(event: InputEvent) -> void:
+	pass
+
 func _input(event):
+	if event.is_action_pressed("wheel_down"):
+		if camera.zoom.x < 1 :
+			camera.zoom = Vector2i(1,1)
+		else : 
+			camera.zoom *= 0.9 
+	if event.is_action_pressed("wheel_up"):
+		if camera.zoom.x > 10 :
+			camera.zoom = Vector2i(10,10)
+		else:
+			camera.zoom *= 1.1
+		
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1 :
 		var clicked_tile_coords = terrain.local_to_map(get_global_mouse_position())
 		if minable(clicked_tile_coords) : 
@@ -78,6 +94,7 @@ func update_local_vision(coords : Vector2i) -> void :
 func reset_target() -> void:
 	damage_to_tile = 0
 	target.clear()
+	last_clicked_tile = oob_coord
 
 ## the idea is that only one block is damages at one given time
 # we know it is not compatible with potential AOE damage but we don't think we want it for now ?
