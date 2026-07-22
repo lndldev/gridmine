@@ -7,6 +7,8 @@ extends Node2D
 @onready var tick_sound 	= $tick_sound
 @onready var break_sound 	= $break_sound
 
+@onready var clear_target 	= $clear_target
+
 var resources = {
 	"stone" 	: 0,
 	"copper" 	: 0,
@@ -42,7 +44,7 @@ func get_terrain_hp(coords: Vector2i) -> int:
 	return terrain.get_cell_tile_data(coords).get_custom_data("hp")
 
 func minable(coords : Vector2i) -> bool :
-	#debatable if last condition might be enough
+	#debatable if second condition might be redundant
 	return is_block_minable(coords) and fog.get_cell_atlas_coords(coords) != fog_atlas and terrain.get_surrounding_cells(coords).any( func(cell) : return is_ground(cell) )
 
 func _input(event):
@@ -73,6 +75,9 @@ func update_local_vision(coords : Vector2i) -> void :
 				tiles_to_show.append(neighbor)
 	lift_fog(tiles_to_show)
 
+func reset_target() -> void:
+	damage_to_tile = 0
+	target.clear()
 
 ## the idea is that only one block is damages at one given time
 # we know it is not compatible with potential AOE damage but we don't think we want it for now ?
@@ -82,10 +87,9 @@ func update_local_vision(coords : Vector2i) -> void :
 # in any case damage stacked until terrain broken
 func minable_block_clicked(clicked_tile_coords : Vector2i):
 	if clicked_tile_coords != last_clicked_tile  : 
+		reset_target()
 		tile_hp = get_terrain_hp(clicked_tile_coords)
-		target.clear()
 		target.set_cell(clicked_tile_coords, 0, target_atlas,1)
-		damage_to_tile = 0
 		last_clicked_tile = clicked_tile_coords
 
 	damage_to_tile += dmg
@@ -95,6 +99,7 @@ func minable_block_clicked(clicked_tile_coords : Vector2i):
 	else:
 		tile_hp = get_terrain_hp(clicked_tile_coords)
 		tick_sound.play()
+		clear_target.start()
 
 func is_ground(coords : Vector2i) -> bool :
 	return get_terrain_type(coords) == "ground"
@@ -135,3 +140,6 @@ func lift_fog(tilesToShow : Array[Vector2i]):
 func update_all_vision():
 	var tiles_to_show = get_all_tiles_to_show()
 	lift_fog(tiles_to_show)
+
+func _on_clear_target_timeout() -> void:
+	reset_target()

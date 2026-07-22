@@ -2435,3 +2435,6 @@ stream = ExtResource("6_o6xl0")
 
 [node name="clear_target" type="Timer" parent="." unique_id=1784288545]
 wait_time = 3.0
+one_shot = true
+
+[connection signal="timeout" from="clear_target" to="." method="_on_clear_target_timeout"]
