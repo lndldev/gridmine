@@ -2441,6 +2441,7 @@ one_shot = true
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2048298957]
 position = Vector2(575, 328)
+limit_smoothed = true
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
 

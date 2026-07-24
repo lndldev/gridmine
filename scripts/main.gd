@@ -28,16 +28,28 @@ var last_clicked_tile : Vector2i = oob_coord
 var damage_to_tile = 0 
 var tile_hp
 const dmg = 1
-
 var gathering_drop_rate = 1
-
 var vision_range = 2
 
+
+
+var dragging = false
+var last_mouse_pos = Vector2i.ZERO
+
 func _ready() -> void:
+	set_camera_limits()
 	update_all_vision()
 
 func _process(delta: float) -> void:
 	pass
+
+func set_camera_limits() -> void :
+	var used_rect = terrain.get_used_rect()
+	var tile_size = terrain.tile_set.tile_size
+	camera.limit_left = used_rect.position.x * tile_size.x
+	camera.limit_top = used_rect.position.y * tile_size.y
+	camera.limit_right = used_rect.end.x * tile_size.x
+	camera.limit_bottom = used_rect.end.y * tile_size.y
 
 func get_terrain_type(coords: Vector2i) -> String:
 	return terrain.get_cell_tile_data(coords).get_custom_data("terrain_type")
@@ -49,8 +61,6 @@ func minable(coords : Vector2i) -> bool :
 	#debatable if second condition might be redundant
 	return is_block_minable(coords) and fog.get_cell_atlas_coords(coords) != fog_atlas and terrain.get_surrounding_cells(coords).any( func(cell) : return is_ground(cell) )
 
-func _unhandled_input(event: InputEvent) -> void:
-	pass
 
 func zoom_in() -> void:
 	var current_zoom = camera.zoom
@@ -64,13 +74,27 @@ func zoom_out() -> void:
 	if current_zoom.x < 10 :
 		camera.zoom = current_zoom
 
+func init_camera_drag(event : InputEventMouseButton) -> void :
+	dragging = event.pressed
+	last_mouse_pos = event.position
+
+func camera_drag(event : InputEventMouseMotion) -> void :
+	var delta = event.position - last_mouse_pos
+	camera.position -= delta / camera.zoom.x
+	last_mouse_pos = event.position
+
 func _input(event):
 	if event.is_action_pressed("wheel_down"):
 		zoom_in()
 	if event.is_action_pressed("wheel_up"):
 		zoom_out()
 		
-	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1 :
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE:
+		init_camera_drag(event)
+	elif event is InputEventMouseMotion	and dragging:
+		camera_drag(event)
+			
+	elif event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT :
 		var clicked_tile_coords = terrain.local_to_map(get_global_mouse_position())
 		if minable(clicked_tile_coords) : 
 			minable_block_clicked(clicked_tile_coords)
